@@ -1,11 +1,16 @@
 extern crate iron;
 extern crate router;
+extern crate mount;
+extern crate staticfile;
 
+use std::env;
 use std::collections::HashMap;
+use std::path::Path;
 use iron::prelude::*;
 use iron::status;
 use router::Router;
-use std::env;
+use mount::Mount;
+use staticfile::Static;
 
 fn lookup_table() -> HashMap<char, char> {
     let plaintext = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789".to_string();
@@ -24,8 +29,17 @@ fn lookup_table() -> HashMap<char, char> {
 
 fn main() {
     let mut router = Router::new();
-    router.get("/v1/cipher/", handler, "index");
-    router.get("/v1/cipher/:query", handler, "cipher");
+    router
+        .get("/api/cipher/", handler, "index")
+        .get("/api/cipher/:query", handler, "cipher");
+
+    let mut mount = Mount::new();
+    mount
+        .mount("/", router)
+        .mount("/cipher", Static::new(Path::new("web/cipher.html")));
+
+    let url = format!("0.0.0.0:{}", env::var("PORT").unwrap());
+    Iron::new(mount).http(&url[..]).unwrap();
 
     fn handler(req: &mut Request) -> IronResult<Response> {
         let nothing = ||{};
@@ -44,8 +58,4 @@ fn main() {
         }
         Ok(Response::with((status::Ok, cipher_string)))
     }
-
-    let url = format!("0.0.0.0:{}", env::var("PORT").unwrap());
-    Iron::new(router).http(&url[..]).unwrap();
-    println!("Bound on {:?}", url);
 }

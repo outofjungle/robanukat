@@ -7,3 +7,5 @@ authors = ["Venkat Venkataraju <venkat.venkataraju@yahoo.com>", "Chuchu Ma <me@c
 [dependencies]
 iron = "0.4.*"
 router = "*"
+staticfile = "*"
+mount = "*"
