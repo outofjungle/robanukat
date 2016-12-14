@@ -5,6 +5,7 @@ use std::collections::HashMap;
 use iron::prelude::*;
 use iron::status;
 use router::Router;
+use std::env;
 
 fn lookup_table() -> HashMap<char, char> {
     let plaintext = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789".to_string();
@@ -44,5 +45,7 @@ fn main() {
         Ok(Response::with((status::Ok, cipher_string)))
     }
 
-    Iron::new(router).http("localhost:80").unwrap();
+    let url = format!("0.0.0.0:{}", env::var("PORT").unwrap());
+    Iron::new(router).http(&url[..]).unwrap();
+    println!("Bound on {:?}", url);
 }
