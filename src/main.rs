@@ -29,6 +29,14 @@ fn lookup_table() -> HashMap<char, char> {
     table
 }
 
+fn get_cipher(chr: &char) -> char {
+    let cipher_lookup = lookup_table();
+    match cipher_lookup.get(chr) {
+        Some(ciphertext) => *ciphertext,
+        None => *chr
+    }
+}
+
 fn main() {
     let mut router = Router::new();
     router
@@ -56,7 +64,6 @@ fn main() {
     }
 
     fn handler(req: &mut Request) -> IronResult<Response> {
-        let nothing = ||{};
         let ref query = req.extensions.get::<Router>()
             .unwrap()
             .find("query")
@@ -64,12 +71,17 @@ fn main() {
             .to_uppercase();
 
         let mut cipher_string = String::new();
-        for plaintext in query.chars() {
-            let cipher_lookup = lookup_table();
-            match cipher_lookup.get(&plaintext) {
-                Some(ciphertext) => cipher_string.push(*ciphertext),
-                None => nothing()
-            };
+        for (index, plaintext) in query.chars().enumerate() {
+            let mut transient = plaintext;
+            let mut times = 0;
+            loop {
+                transient = get_cipher(&transient);
+                times = times + 1;
+                if times == index + 1 {
+                    break;
+                }
+            }
+            cipher_string.push(transient);
         }
         Ok(Response::with((status::Ok, cipher_string)))
     }
