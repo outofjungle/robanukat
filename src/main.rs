@@ -2,6 +2,7 @@ extern crate iron;
 extern crate router;
 extern crate mount;
 extern crate staticfile;
+extern crate url;
 
 use std::env;
 use std::collections::HashMap;
@@ -12,6 +13,7 @@ use iron::{Url, status};
 use router::Router;
 use mount::Mount;
 use staticfile::Static;
+use url::percent_encoding::percent_decode;
 
 fn lookup_table() -> HashMap<char, char> {
     let plaintext = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789".to_string();
@@ -70,8 +72,13 @@ fn main() {
             .unwrap_or("")
             .to_uppercase();
 
+        let decoded = percent_decode(query.as_bytes())
+            .decode_utf8()
+            .unwrap()
+            .to_string();
+
         let mut cipher_string = String::new();
-        for (index, plaintext) in query.chars().enumerate() {
+        for (index, plaintext) in decoded.chars().enumerate() {
             let mut transient = plaintext;
             let mut times = 0;
             loop {
