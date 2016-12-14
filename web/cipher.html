@@ -2,35 +2,34 @@
 <html lang="en">
 
 <head>
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
     <meta http-equiv="content-type" content="text/html; charset=utf-8">
     <title>Cipher Lookup</title>
 </head>
 
 <body>
-  <input type="text" name="query" id="query">
-  <div id="cipher"></div>
+    <input type="text" name="query" id="query">
+    <div id="cipher"></div>
 </body>
 <script>
-$(document).ready(function() {
+    $(document).ready(function() {
+        var timeout = null;
 
-      var timeoutID = null;
+        function findCipher(query) {
+            $.ajax({
+                type: "GET",
+                url: "/api/cipher/" + query,
+                cache: false,
+                success: function(data) {
+                    $("#cipher").text(data);
+                }
+            });
+        }
 
-      function findCipher(query) {
-        $.ajax({
-          type: "GET",
-          url: "/api/cipher/" + query,
-          cache: false,
-          success: function(data){
-             $("#cipher").text(data);
-          }
+        $('#query').keyup(function(e) {
+            clearTimeout(timeout);
+            timeout = setTimeout(findCipher.bind(undefined, e.target.value), 500);
         });
-      }
-
-      $('#query').keyup(function(e) {
-        clearTimeout(timeoutID);
-        timeoutID = setTimeout(findCipher.bind(undefined, e.target.value), 500);
-      });
-});
+    });
 </script>
 </html>
