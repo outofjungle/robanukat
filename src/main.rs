@@ -44,5 +44,5 @@ fn main() {
         Ok(Response::with((status::Ok, cipher_string)))
     }
 
-    Iron::new(router).http("localhost:3000").unwrap();
+    Iron::new(router).http("localhost:80").unwrap();
 }
