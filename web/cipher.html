@@ -2,15 +2,63 @@
 <html lang="en">
 
 <head>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-    <meta http-equiv="content-type" content="text/html; charset=utf-8">
     <title>Cipher Lookup</title>
+    <link rel="stylesheet" href="https://unpkg.com/purecss@0.6.1/build/pure-min.css">
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+
+    <style>
+        .grid {
+            margin: 2em auto;
+            text-align: center;
+        }
+
+        text:focus,
+        input:focus {
+            outline: none;
+        }
+
+        input[type=text] {
+            width: 50%;
+            border: 0px solid #000000;
+            border-bottom-width: 5px;
+            background-color: transparent;
+            text-align: center;
+            box-sizing: border-box;
+        }
+
+        .displaytext {
+            font-size: 60px;
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            text-transform: uppercase;
+        }
+    </style>
 </head>
 
 <body>
-    <input type="text" name="query" id="query">
-    <div id="cipher"></div>
+    <div class="grid">
+        <div class="pure-g">
+            <div class="pure-u-1 pure-u-md-1-2 pure-u-lg-1-4">
+                <div></div>
+            </div>
+            <div class="pure-u-1 pure-u-md-1-2 pure-u-lg-1-4">
+                <div>
+                    <p><input type="text" name="query" class="displaytext" id="query"></p>
+                </div>
+            </div>
+            <div class="pure-u-1 pure-u-md-1-2 pure-u-lg-1-4">
+                <div>
+                    <p class="displaytext" id="cipher"></p>
+                </div>
+            </div>
+            <div class="pure-u-1 pure-u-md-1-2 pure-u-lg-1-4">
+                <div></div>
+            </div>
+        </div>
+    </div>
 </body>
+
 <script>
     $(document).ready(function() {
         var timeout = null;
@@ -32,4 +80,5 @@
         });
     });
 </script>
+
 </html>
