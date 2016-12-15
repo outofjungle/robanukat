@@ -80,6 +80,10 @@
             clearTimeout(timeout);
             timeout = setTimeout(findCipher.bind(undefined, e.target.value), 500);
         });
+
+        $(function() {
+            $("#query").focus();
+        });
     });
 </script>
 
