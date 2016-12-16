@@ -17,7 +17,6 @@ use staticfile::Static;
 use rustc_serialize::json;
 use url::percent_encoding::percent_decode;
 
-
 #[derive(RustcDecodable, RustcEncodable)]
 struct JsonPayload {
     text: String,
