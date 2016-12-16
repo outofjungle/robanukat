@@ -21,10 +21,10 @@
 
         .prompt {
             padding-left: 0.2em;
-            padding-right: 0.5em;
+            padding-right: 0.2em;
             font-weight: bold;
         }
-        
+
         span#ps1 {
             color: white;
         }
@@ -89,7 +89,7 @@
                         .before('<tr><td class="prompt"><p><span id="ps1">~</span>></p></td><td><p>' + query + '</p></td></tr>');
                     $('#console')
                         .find('tr:last')
-                        .before('<tr><td></td><td><p>' + data + '</p></td></tr>');
+                        .before('<tr><td><p>&nbsp;</p></td><td><p>' + data + '</p></td></tr>');
                 }
             });
         }
