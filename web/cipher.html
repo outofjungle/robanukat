@@ -18,10 +18,15 @@
             text-transform: uppercase;
         }
 
+        .prompt {
+          padding-left: 0.2em;
+          padding-right: 0.5em;
+        }
+
         p {
             border: 0px;
             padding: 0px;
-            margin: 0px;
+            margin: 0.2em 0em 0em 0em;
         }
 
         table,
@@ -49,7 +54,7 @@
     <table id="console">
         <tbody>
             <tr>
-                <td class="prompt">$</td>
+                <td class="prompt"><p>$</p></td>
                 <td>
                     <p><input type="text" id="query"></p>
                 </td>
@@ -67,7 +72,7 @@
                 cache: false,
                 success: function(data) {
                     $('#query').val('');
-                    $('#console').find('tr:last').before('<tr><td class="prompt">$</td><td><p>' + query + '</p></td></tr>');
+                    $('#console').find('tr:last').before('<tr><td class="prompt"><p>$</p></td><td><p>' + query + '</p></td></tr>');
                     $('#console').find('tr:last').before('<tr><td></td><td><p>' + data + '</p></td></tr>');
                 }
             });
