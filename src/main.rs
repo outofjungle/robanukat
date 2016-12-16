@@ -1,36 +1,41 @@
-extern crate iron;
-extern crate router;
-extern crate mount;
-extern crate staticfile;
 extern crate url;
+extern crate iron;
+extern crate mount;
+extern crate router;
+extern crate staticfile;
+extern crate rustc_serialize;
 
 use std::env;
-use std::collections::HashMap;
+use std::io::Read;
 use std::path::Path;
+use std::collections::HashMap;
+use iron::status;
 use iron::prelude::*;
-use iron::modifiers::Redirect;
-use iron::{Url, status};
-use router::Router;
 use mount::Mount;
+use router::Router;
 use staticfile::Static;
+use rustc_serialize::json;
 use url::percent_encoding::percent_decode;
+
+
+#[derive(RustcDecodable, RustcEncodable)]
+struct JsonPayload {
+    text: String,
+}
 
 struct CipherTable(HashMap<char, char>);
 
 impl CipherTable {
     pub fn new() -> CipherTable {
-        let plaintext = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789".to_string();
-        let ciphertext = "9IBJ71K3SZQGLYPU0VM4NWR8OXHCAT65DFE2".to_string();
+        let plaintext = "abcdefghijklmnopqrstuvwxyz0123456789".to_string();
+        let ciphertext = "9ibj71k3szqglypu0vm4nwr8oxhcat65dfe2".to_string();
 
-        let mut table:HashMap<char, char> = HashMap::new();
+        let mut table: HashMap<char, char> = HashMap::new();
         for (index, chr) in plaintext.chars().enumerate() {
-            table.insert(
-                chr,
-                ciphertext
-                    .chars()
-                    .nth(index)
-                    .unwrap()
-            );
+            table.insert(chr,
+                         ciphertext.chars()
+                             .nth(index)
+                             .unwrap());
         }
         CipherTable(table)
     }
@@ -39,31 +44,23 @@ impl CipherTable {
         let &CipherTable(ref table) = self;
         match table.get(chr) {
             Some(ciphertext) => *ciphertext,
-            None => *chr
+            None => *chr,
         }
     }
-}
-
-fn redirect(req: &mut Request) -> IronResult<Response> {
-    let redirect_url = Url::from_generic_url(
-        req.url
-            .clone()
-            .into_generic_url()
-            .join("/cipher")
-            .unwrap()
-    ).unwrap();
-    Ok(Response::with((status::Found, Redirect(redirect_url))))
 }
 
 fn cipher_handler(req: &mut Request) -> IronResult<Response> {
     let cipher_table = CipherTable::new();
 
-    let ref query = req.extensions.get::<Router>()
-        .unwrap()
-        .find("query")
-        .unwrap_or("")
-        .to_uppercase();
+    let mut payload = String::new();
+    req.body.read_to_string(&mut payload).unwrap();
 
+    let data: JsonPayload = match json::decode(&payload) {
+        Ok(decoded) => decoded,
+        _ => return Ok(Response::with((status::BadRequest))),
+    };
+
+    let query = data.text.to_lowercase();
     let decoded = percent_decode(query.as_bytes())
         .decode_utf8()
         .unwrap()
@@ -87,16 +84,12 @@ fn cipher_handler(req: &mut Request) -> IronResult<Response> {
 
 fn main() {
     let mut router = Router::new();
-    router
-        .get("/", redirect, "redirect")
-        .get("/api/cipher/", cipher_handler, "index")
-        .get("/api/cipher/:query", cipher_handler, "cipher");
+    router.post("/cipher", cipher_handler, "cipher");
 
     let mut mount = Mount::new();
-    mount
-        .mount("/", router)
-        .mount("/images", Static::new(Path::new("web/images")))
-        .mount("/cipher", Static::new(Path::new("web/cipher.html")));
+    mount.mount("/images", Static::new(Path::new("web/images")))
+        .mount("/", Static::new(Path::new("web/cipher.html")))
+        .mount("/api", router);
 
     let port = env::var("PORT").unwrap_or("3000".to_string());
     let url = format!("0.0.0.0:{}", port);

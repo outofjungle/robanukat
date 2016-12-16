@@ -15,12 +15,18 @@
             color: #00FF00;
             font-size: 25px;
             font-family: 'Anonymous Pro', monospace;
-            text-transform: uppercase;
+            text-transform: lowercase;
+            ;
         }
 
         .prompt {
             padding-left: 0.2em;
             padding-right: 0.5em;
+            font-weight: bold;
+        }
+        
+        span#ps1 {
+            color: white;
         }
 
         p {
@@ -45,7 +51,7 @@
             border: 0px solid #00FF00;
             border-radius: 0px;
             background-color: transparent;
-            text-transform: uppercase;
+            text-transform: lowercase;
         }
     </style>
 </head>
@@ -55,7 +61,7 @@
         <tbody>
             <tr>
                 <td class="prompt">
-                    <p>$</p>
+                    <p><span id="ps1">~</span>></p>
                 </td>
                 <td>
                     <p><input type="text" id="query"></p>
@@ -69,13 +75,21 @@
     $(document).ready(function() {
         function findCipher(query) {
             $.ajax({
-                type: 'GET',
-                url: '/api/cipher/' + query,
+                type: 'POST',
+                url: '/api/cipher',
+                contentType: 'application/json',
+                data: JSON.stringify({
+                    'text': query
+                }),
                 cache: false,
                 success: function(data) {
                     $('#query').val('');
-                    $('#console').find('tr:last').before('<tr><td class="prompt"><p>$</p></td><td><p>' + query + '</p></td></tr>');
-                    $('#console').find('tr:last').before('<tr><td></td><td><p>' + data + '</p></td></tr>');
+                    $('#console')
+                        .find('tr:last')
+                        .before('<tr><td class="prompt"><p><span id="ps1">~</span>></p></td><td><p>' + query + '</p></td></tr>');
+                    $('#console')
+                        .find('tr:last')
+                        .before('<tr><td></td><td><p>' + data + '</p></td></tr>');
                 }
             });
         }

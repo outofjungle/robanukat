@@ -1,12 +1,12 @@
 [package]
-
 name = "robanukat"
 version = "0.0.1"
 authors = ["Venkat Venkataraju <venkat.venkataraju@yahoo.com>", "Chuchu Ma <me@chuchuma.com>"]
 
 [dependencies]
-iron = "0.4.*"
-router = "*"
-staticfile = "*"
-mount = "*"
 url = "*"
+mount = "*"
+router = "*"
+iron = "0.4.*"
+staticfile = "*"
+rustc-serialize = "*"
