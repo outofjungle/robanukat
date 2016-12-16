@@ -26,8 +26,8 @@ struct CipherTable(HashMap<char, char>);
 
 impl CipherTable {
     pub fn new() -> CipherTable {
-        let plaintext = "abcdefghijklmnopqrstuvwxyz0123456789".to_string();
-        let ciphertext = "9ibj71k3szqglypu0vm4nwr8oxhcat65dfe2".to_string();
+        let plaintext = env::var("PLAINTEXT").unwrap_or("".to_string());
+        let ciphertext = env::var("CIPHERTEXT").unwrap_or("".to_string());
 
         let mut table: HashMap<char, char> = HashMap::new();
         for (index, chr) in plaintext.chars().enumerate() {
