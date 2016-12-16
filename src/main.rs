@@ -95,6 +95,7 @@ fn main() {
     let mut mount = Mount::new();
     mount
         .mount("/", router)
+        .mount("/images", Static::new(Path::new("web/images")))
         .mount("/cipher", Static::new(Path::new("web/cipher.html")));
 
     let port = env::var("PORT").unwrap_or("3000".to_string());
