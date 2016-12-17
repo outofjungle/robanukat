@@ -22,34 +22,65 @@ struct JsonPayload {
     text: String,
 }
 
-struct CipherTable(HashMap<char, char>);
+struct Cipher {
+    table: HashMap<char, char>,
+}
 
-impl CipherTable {
-    pub fn new() -> CipherTable {
-        let plaintext = env::var("PLAINTEXT").unwrap_or("".to_string());
-        let ciphertext = env::var("CIPHERTEXT").unwrap_or("".to_string());
-
-        let mut table: HashMap<char, char> = HashMap::new();
+impl Cipher {
+    fn build(&mut self, plaintext: String, ciphertext: String) {
         for (index, chr) in plaintext.chars().enumerate() {
-            table.insert(chr,
-                         ciphertext.chars()
-                             .nth(index)
-                             .unwrap());
+            self.table.insert(chr,
+                              ciphertext.chars()
+                                  .nth(index)
+                                  .unwrap());
         }
-        CipherTable(table)
+    }
+
+    pub fn forward() -> Cipher {
+        let plaintext = plaintext();
+        let ciphertext = ciphertext();
+        let mut cipher = Cipher { table: HashMap::new() };
+        cipher.build(plaintext, ciphertext);
+        cipher
+    }
+
+    pub fn reverse() -> Cipher {
+        let plaintext = plaintext();
+        let ciphertext = ciphertext();
+        let mut cipher = Cipher { table: HashMap::new() };
+        cipher.build(ciphertext, plaintext);
+        cipher
     }
 
     pub fn lookup(&self, chr: &char) -> char {
-        let &CipherTable(ref table) = self;
-        match table.get(chr) {
+        match self.table.get(chr) {
             Some(ciphertext) => *ciphertext,
             None => *chr,
         }
     }
 }
 
+fn plaintext() -> String {
+    return env::var("PLAINTEXT").unwrap_or("".to_string());
+}
+
+fn ciphertext() -> String {
+    return env::var("CIPHERTEXT").unwrap_or("".to_string());
+}
+
 fn cipher_handler(req: &mut Request) -> IronResult<Response> {
-    let cipher_table = CipherTable::new();
+    let ref query = req.extensions
+        .get::<Router>()
+        .unwrap()
+        .find("op")
+        .unwrap_or("")
+        .to_lowercase();
+
+    let cipher_table = match query.as_ref() {
+        "encode" => Cipher::forward(),
+        "decode" => Cipher::reverse(),
+        _ => return Ok(Response::with((status::BadRequest))),
+    };
 
     let mut payload = String::new();
     req.body.read_to_string(&mut payload).unwrap();
@@ -83,7 +114,7 @@ fn cipher_handler(req: &mut Request) -> IronResult<Response> {
 
 fn main() {
     let mut router = Router::new();
-    router.post("/cipher", cipher_handler, "cipher");
+    router.post("/:op", cipher_handler, "cipher");
 
     let mut mount = Mount::new();
     mount.mount("/images", Static::new(Path::new("web/images")))

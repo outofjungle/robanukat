@@ -64,7 +64,7 @@
                     <p><span id="ps1">~</span>></p>
                 </td>
                 <td>
-                    <p><input type="text" id="query"></p>
+                    <p><input type="text" id="cli"></p>
                 </td>
             </tr>
         </tbody>
@@ -73,50 +73,77 @@
 
 <script>
     $(document).ready(function() {
-        function findCipher(query) {
-            $.ajax({
-                type: 'POST',
-                url: '/api/cipher',
-                contentType: 'application/json',
-                data: JSON.stringify({
-                    'text': query
-                }),
-                cache: false,
-                success: function(data) {
-                    $('#query').val('');
-                    $('#console')
-                        .find('tr:last')
-                        .before('<tr id="hist"><td class="prompt"><p><span id="ps1">~</span>></p></td><td><p>' + query + '</p></td></tr>');
-                    if (data.length > 0) {
-                        $('#console')
-                            .find('tr:last')
-                            .before('<tr id="hist"><td><p>&nbsp;</p></td><td><p>' + data + '</p></td></tr>');
-                    }
-                    $(document).scrollTop(
-                        $(document).height()
-                    );
-                }
-            });
+        function response(input, result) {
+            $('#cli').val('');
+            $('#console')
+                .find('tr:last')
+                .before('<tr id="hist"><td class="prompt"><p><span id="ps1">~</span>></p></td><td><p>' + input + '</p></td></tr>');
+            if (result.length > 0) {
+                $('#console')
+                    .find('tr:last')
+                    .before('<tr id="hist"><td><p>&nbsp;</p></td><td><p>' + result + '</p></td></tr>');
+            }
+            $(document).scrollTop(
+                $(document).height()
+            );
         }
 
         function clear() {
-            $('#query').val('');
+            $('#cli').val('');
             var erase = document.querySelectorAll("#hist");
             $(erase).remove();
         }
 
-        $('#query').keypress(function(e) {
-            if (e.which == 13) {
-                var query = e.target.value.toLowerCase();;
-                if (query == 'clear') {
-                    return clear();
+        function notFound(cmd, input) {
+            var resp = 'unknown command "' + cmd + '". please type "help".';
+            response(input, resp);
+        }
+
+        function help(input) {
+            var resp = 'enc &lt;string&gt; - encrypt string<br/>dec &lt;string&gt; - decrypt string';
+            response(input, resp);
+        }
+
+        function findCipher(op, input, param) {
+            $.ajax({
+                type: 'POST',
+                url: '/api/' + op,
+                contentType: 'application/json',
+                data: JSON.stringify({
+                    'text': param
+                }),
+                cache: false,
+                success: function(data) {
+                    response(input, data);
                 }
-                findCipher(e.target.value);
+            });
+        }
+
+        $('#cli').keypress(function(e) {
+            if (e.which == 13) {
+                var input = e.target.value.toLowerCase();
+                var regex = new RegExp(/([a-zA-Z]*)\s*(.*)/);
+                var match = regex.exec(input);
+                var cmd = match[1];
+                var param = match[2];
+
+                if (cmd == '') {
+                    return response(input, '');
+                } else if (cmd == 'clear') {
+                    return clear();
+                } else if (cmd == 'help') {
+                    return help(input);
+                } else if (cmd == 'enc') {
+                    return findCipher('encode', input, param);
+                } else if (cmd == 'dec') {
+                    return findCipher('decode', input, param);
+                }
+                notFound(cmd, input);
             }
         });
 
         $(function() {
-            $('#query').focus();
+            $('#cli').focus();
         });
     });
 </script>
