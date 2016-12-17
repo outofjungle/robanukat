@@ -92,6 +92,9 @@
                             .find('tr:last')
                             .before('<tr id="hist"><td><p>&nbsp;</p></td><td><p>' + data + '</p></td></tr>');
                     }
+                    $(document).scrollTop(
+                      $(document).height()
+                    );
                 }
             });
         }
