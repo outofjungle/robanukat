@@ -48,10 +48,44 @@
 
         input[type=text] {
             width: 90%;
-            border: 0px solid #00FF00;
+            border: 0px solid green;
             border-radius: 0px;
             background-color: transparent;
             text-transform: lowercase;
+        }
+
+         ::-webkit-input-placeholder {
+            color: green;
+        }
+
+         :-moz-placeholder {
+            color: green;
+            opacity: 1;
+        }
+
+         ::-moz-placeholder {
+            color: green;
+            opacity: 1;
+        }
+
+         :-ms-input-placeholder {
+            color: green;
+        }
+
+        input:focus::-webkit-input-placeholder {
+            color: transparent;
+        }
+
+        input:focus:-moz-placeholder {
+            color: transparent;
+        }
+
+        input:focus::-moz-placeholder {
+            color: transparent;
+        }
+
+        input:focus:-ms-input-placeholder {
+            color: transparent;
         }
     </style>
 </head>
@@ -64,7 +98,7 @@
                     <p><span id="ps1">~</span>></p>
                 </td>
                 <td>
-                    <p><input type="text" id="cli"></p>
+                    <p><input placeholder="_" type="text" id="cli"></p>
                 </td>
             </tr>
         </tbody>
@@ -97,7 +131,7 @@
         }
 
         function help(input) {
-            var resp = 'enc &lt;string&gt; - encrypt string<br/>dec &lt;string&gt; - decrypt string';
+            var resp = 'enc &lt;string&gt; - encrypt<br/>dec &lt;string&gt; - decrypt';
             response(input, resp);
         }
 
@@ -139,7 +173,19 @@
             }
         });
 
+        function blinky_cursor() {
+            if ($('input[type=text]').attr('placeholder')) {
+                $('input[type=text]').attr('placeholder', '');
+            } else {
+                $('input[type=text]').attr('placeholder', '_');
+            }
+            setTimeout(blinky_cursor, 500);
+        }
+
         $(function() {
+            if ($('#cli').is(':focus') == false) {
+                blinky_cursor();
+            }
             $('#cli').focus();
         });
     });
