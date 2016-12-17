@@ -98,7 +98,7 @@
                     <p><span id="ps1">~</span>></p>
                 </td>
                 <td>
-                    <p><input placeholder="_" type="text" id="cli"></p>
+                    <p><input placeholder="_" type="text" name="cli" id="cli"></p>
                 </td>
             </tr>
         </tbody>
@@ -174,10 +174,10 @@
         });
 
         function blinky_cursor() {
-            if ($('input[type=text]').attr('placeholder')) {
-                $('input[type=text]').attr('placeholder', '');
+            if ($('input[name="cli"]').attr('placeholder')) {
+                $('input[name="cli"]').attr('placeholder', '');
             } else {
-                $('input[type=text]').attr('placeholder', '_');
+                $('input[name="cli"]').attr('placeholder', '_');
             }
             setTimeout(blinky_cursor, 500);
         }
@@ -185,6 +185,15 @@
         $(function() {
             if ($('#cli').is(':focus') == false) {
                 blinky_cursor();
+            }
+        });
+
+        $('body').on('keydown', function(e) {
+            if (!(e.metaKey || e.ctrlKey)) {
+                var input = $('input[name="cli"]');
+                if (!input.is(':focus')) {
+                    input.focus();
+                }
             }
         });
     });
