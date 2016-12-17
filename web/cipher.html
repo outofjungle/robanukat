@@ -104,7 +104,7 @@
 
         $('#query').keypress(function(e) {
             if (e.which == 13) {
-                var query = e.target.value;
+                var query = e.target.value.toLowerCase();;
                 if (query == 'clear') {
                     return clear();
                 }
