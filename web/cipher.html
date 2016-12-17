@@ -86,16 +86,28 @@
                     $('#query').val('');
                     $('#console')
                         .find('tr:last')
-                        .before('<tr><td class="prompt"><p><span id="ps1">~</span>></p></td><td><p>' + query + '</p></td></tr>');
-                    $('#console')
-                        .find('tr:last')
-                        .before('<tr><td><p>&nbsp;</p></td><td><p>' + data + '</p></td></tr>');
+                        .before('<tr id="hist"><td class="prompt"><p><span id="ps1">~</span>></p></td><td><p>' + query + '</p></td></tr>');
+                    if (data.length > 0) {
+                        $('#console')
+                            .find('tr:last')
+                            .before('<tr id="hist"><td><p>&nbsp;</p></td><td><p>' + data + '</p></td></tr>');
+                    }
                 }
             });
         }
 
+        function clear() {
+            $('#query').val('');
+            var erase = document.querySelectorAll("#hist");
+            $(erase).remove();
+        }
+
         $('#query').keypress(function(e) {
             if (e.which == 13) {
+                var query = e.target.value;
+                if (query == 'clear') {
+                    return clear();
+                }
                 findCipher(e.target.value);
             }
         });
