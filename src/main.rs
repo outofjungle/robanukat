@@ -109,7 +109,9 @@ fn cipher_handler(req: &mut Request) -> IronResult<Response> {
         }
         cipher_string.push(transient);
     }
-    Ok(Response::with((status::Ok, cipher_string)))
+
+    let reply = JsonPayload { text: cipher_string };
+    Ok(Response::with((status::Ok, json::encode(&reply).unwrap())))
 }
 
 fn main() {
