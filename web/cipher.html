@@ -98,7 +98,7 @@
                     <p><span id="ps1">~</span>></p>
                 </td>
                 <td>
-                    <p><input placeholder="_" type="text" name="cli" id="cli"></p>
+                    <p><input placeholder="|" type="text" name="cli" id="cli"></p>
                 </td>
             </tr>
         </tbody>
@@ -177,7 +177,7 @@
             if ($('input[name="cli"]').attr('placeholder')) {
                 $('input[name="cli"]').attr('placeholder', '');
             } else {
-                $('input[name="cli"]').attr('placeholder', '_');
+                $('input[name="cli"]').attr('placeholder', '|');
             }
             setTimeout(blinky_cursor, 500);
         }
